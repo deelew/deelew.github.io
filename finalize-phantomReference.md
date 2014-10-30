@@ -1,1 +1,2 @@
-谈谈Java的finalize 机制与PhantomReference 
+##谈谈Java的finalize 机制与PhantomReference 
+
