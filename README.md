@@ -1,2 +1,2 @@
-[My Blogs](http://deelew.github.io/finalize-phantomReference.html)
+[My Blogs](http://deelew.github.io/)
 ================
