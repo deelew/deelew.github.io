@@ -1,0 +1,1 @@
+1、统计某进程下线程的状态：echo 21665|xargs -I {} bash -c "while true;do ps -p {} -Lo s|sort|uniq -c && sleep 0.1;done"
