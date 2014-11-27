@@ -1,0 +1,14 @@
+关于loadavg 高，而cpu使用率低的问题 
+知识点： 
+<ul>loadavg的计算</ul>
+<ul>cpu使用率的计算</ul>
+<ul>进程状态uninterrupted status </ul>
+<br/>
+loadavg的计算： 
+http://kernel.taobao.org/index.php/Loadavg%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90#Loadavg.E5.92.8C.E8.BF.9B.E7.A8.8B.E4.B9.8B.E9.97.B4.E7.9A.84.E5.85.B3.E7.B3.BB <br />
+简单来说，是通过对cpu线程队列的线程数的采样统计得到的。 并且大部分系统的采样频率为5s，可以通过top -d 1 每秒一次刷新粗略验证下。
+具体的算法还加入了对过往数据的时间加权。并且avg 1 / avg 5 / avg 15 分别体现了1 min 、5min、15min范围内平滑load值，通过对比三个值能看出系统的负载走势 </br>
+
+而cpu使用率，计算的是时间片(USER_HZ)的使用率,man里说，USER_HZ一般是1/100秒。
+
+uninterrupted态一般是进行io的进程，在等待io设备，而不能被中断
