@@ -23,7 +23,7 @@ public LazyClass getLazyInstance(){
 这里如果有T1 T2两个线程同时访问getLazyInstance,就有可能其中一个线程获取到了未初始化完成的LazyClass实例！  
 展开成字节码更容易理解(字节码有删节)：  
 ```java
-
+// TODO
 ```
 关键在于new 和<init>这里，当发生指令重排序（reordering）时，写入字段lazyInstance先于执行构造方法初始化lazyInstance。如果恰好在写入lazyInstance之后，初始化lazyInstance之前，T2执行第一个if(lazyInstance==null)判断，则为false，于是拿着一个为初始化完成的对象进行了操作，后果可想而知。。。  
 插句题外话，第一次接触reordering概念时，三观都毁掉啦，就像脚下踩得坚实的土地变成了沙滩，请不要笑话我浅薄的知识orz...  
