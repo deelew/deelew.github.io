@@ -73,7 +73,8 @@ public LazyClass getLazyInstance();
 我们进一步展开讨论几个问题：为啥会发生TMD reordering ? 有没有改进版的DCL ? 有没有其他方法实现DCL的延迟初始化目的?   
 
 **关于reordering**  
-博主半道失足，基础知识甚不扎实，初次看到reordering的时候理解不能，感觉脚下坚实的大地突然变得柔软了，这TMD还怎么写代码？指令不按照寡人写的代码顺序来执行！实际上，细细看来，没有那么糟糕，软是软了点，但是还是可以找到正确的姿势奔跑的。  
+博主半道失足，基础知识甚不扎实，初次看到reordering的时候理解不能，感觉脚下坚实的大地突然变得柔软了，这TMD还怎么写代码？指令不按照寡人写的代码顺序来执行！实际上，细细看来，没有那么糟糕，软是软了点，但是还是可以找到正确的姿势奔跑的。主要分为三个层面：  
+
 - compiler reordering
 - machine instruction process reordering 
 - cache/momery flush recordering  
