@@ -21,7 +21,7 @@ class LazyClass {
 }
 ```  
 **失效根源**   
-简单来讲，是由于指令重排（reordering）导致lazyInstance字段先赋值然后再执行行初始化构造方法。当赋值完成，且初始化未完成时，并发线程执行初次lazyInstance==null的判断为false，于是获取到了未初始化完成的LazyClass实例。  
+简单来讲，是由于指令重排（reordering）导致instance字段先赋值然后再执行行初始化构造方法。当赋值完成，且初始化未完成时，并发线程执行初次instance==null的判断为false，于是获取到了未初始化完成的LazyClass实例。  
 通过展开字节码仔细查看下这个问题：  
 
 ```java
@@ -75,11 +75,13 @@ public LazyClass getLazyInstance();
 **关于reordering**  
 博主半道失足，基础知识甚不扎实，初次看到reordering的时候理解不能，感觉脚下坚实的大地突然变得柔软了，这TMD还怎么写代码？指令不按照寡人写的代码顺序来执行！实际上，细细看来，没有那么糟糕，软是软了点，但是还是可以找到正确的姿势奔跑的。主要分为三个层面：  
 
-- compiler reordering
+- compiler reordering  
+  编译器有可能会对指令进行重排序，另外如果将方法调用内联了，那么内联方法的内容进一步增加了重排序的范围。
 - machine instruction process reordering 
 - cache/momery flush recordering  
 
-reordering的底线在哪里？
+reordering的底线在哪里？  
+编译器、处理器、存储都确保as-if-serial 语义级别的有序，可以理解为，从执行结果看，与代码语义一致，并且是单线程执行的情况。
 
 如果编译器推断，构造方法不会抛出异常以及没有做同步，就可能将构造函数内联调用，进一步对指令reorder。这里就发生了，lazyInstance字段先被赋值，然后再初始化的情况产生。但是synchronized是获取this的锁，而lazyInstance本身没法加锁，于是T2可以顺利的读取到lazyInstance 非null，于是就欢乐地去使用lazyInstance了，一个半成品的lazyInstance对象，于是整个线程就不好了。。。  
 另外，即便没有做compile recorder， 在多处理器机器上，内存模块也有可能会重排写指令，导致先赋值lazyInstance字段后初始化赋值lazyInstance字段的字段。  
