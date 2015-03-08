@@ -44,11 +44,11 @@ class LazyClass {
 **关于reordering**  
 重排序的根本目的在于提高代码执行速度。随着cpu、cache的复杂度越来越高，一些指令顺序的改变对指令的执行效率有明显的影响，因而发展出了多种指令重排序技术。
 包括编译期重排序，重排序主要分为三个层面：  
-- compiler reordering  
+- **compiler reordering**  
   编译器有可能会对指令进行重排序，另外如果将方法调用内联了，那么内联方法的内容进一步增加了重排序的范围。指令重排只是[Optimizing compiler](http://en.wikipedia.org/wiki/Optimizing_compiler#Data-flow_optimizations)的优化策略之一。对读写指令重排序主要是增强数据局部性（data locality），从而提高缓存命中率。从上述伪指令可以看出，通过调换3/4条指令，使得store instance 与0指令更加接近
-- machine instruction process reordering 
+- **machine instruction process reordering**  
   通过重排执行指令，提高管线（pipeline)执行的效率
-- cache/memory flush recordering  
+- **cache/memory flush recordering**  
   多层、大容量cache/memory也可能通过批量、重排读写操作提高读写效率、缓存命中率  
 
 如此复杂的重排序，岂不是把代码逻辑都搞乱了？重排序的底线在哪里？  
