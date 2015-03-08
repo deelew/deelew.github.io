@@ -21,7 +21,16 @@ class LazyClass {
 }
 ```  
 **失效根源**   
-简单来讲，是由于指令重排（reordering）导致instance字段先赋值然后再执行行初始化构造方法。当赋值完成，且初始化未完成时，并发线程执行初次instance==null的判断为false，于是获取到了未初始化完成的LazyClass实例。  
+简单来讲，是由于指令重排（reordering）导致instance字段先赋值然后再执行行初始化构造方法。用伪指令表示下第二层check：
+```
+load instace
+cmp instance , null
+allocate LazyInstance 
+invoke LazyInstance.<init>
+store instance 
+```
+
+拆解下instance=new LazyClass这个语句：a> 为LazyClass实例分配内存 b> 执行构造方法初始化lazyClass实例 c> 将lazyClass实例引用赋值给instance字段。当重排序发生时，执行顺序变为a>c>b，当 c> 完成，且初始化b>未完成时，并发线程执行初次instance==null的判断为false，于是获取到了未初始化完成的LazyClass实例。  
 通过展开字节码仔细查看下这个问题：  
 
 ```java
@@ -73,8 +82,8 @@ public LazyClass getLazyInstance();
 我们进一步展开讨论几个问题：为啥会发生TMD reordering ? 有没有改进版的DCL ? 有没有其他方法实现DCL的延迟初始化目的?   
 
 **关于reordering**  
-博主半道失足，基础知识甚不扎实，初次看到reordering的时候理解不能，感觉脚下坚实的大地突然变得柔软了，这TMD还怎么写代码？指令不按照寡人写的代码顺序来执行！实际上，细细看来，没有那么糟糕，软是软了点，但是还是可以找到正确的姿势奔跑的。主要分为三个层面：  
-
+重排序的根本目的在于提高代码执行速度。随着cpu、cache的复杂度越来越高，一些指令顺序的改变对指令的执行效率有明显的影响，因而发展出了多种指令重排序技术。
+主要分为三个层面：  
 - compiler reordering  
   编译器有可能会对指令进行重排序，另外如果将方法调用内联了，那么内联方法的内容进一步增加了重排序的范围。
 - machine instruction process reordering 
@@ -88,7 +97,7 @@ reordering的底线在哪里？
 
 拉回到Java代码。。。   
 
-
+**改进版DCL**  
 代码界有很多聪明虫，提出了改进，试图解决这个问题，他们的代码如下，看上去确实很聪明，以至于我看了几遍才搞明白他用意何在：  
 ```java 
 public class DCLTest {
