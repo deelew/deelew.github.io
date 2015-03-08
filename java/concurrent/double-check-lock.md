@@ -1,5 +1,5 @@
-**引子** 
-排查一个问题的时候，涉及到了DCL，之前就看到过关于‘double-chek-lock’(DCL)失效的问题，但是细节没记住，准确说没有真正理解，于是又翻阅了下资料，顺道梳理下。  
+**引子**  
+这是个老掉牙的问题，前面排查一个问题的时候，涉及到了DCL，之前就看到过关于‘double-chek-lock’失效的问题，但是细节没记住，准确说没有真正理解，于是又翻阅了下资料，顺道梳理下。  
 
 **DCL idiom**  
 DCL通常是用来延迟对象初始化的，大概是这个样子：  
@@ -95,9 +95,12 @@ class Foo {
       }
     return h;
     }
-```  
+```    
 
-另外，在jdk5之后，jls进一步定义了内存模型，也就是jsr-133，其中增强了volatile的语义，规定读写由volatile修饰的指令，不得与其前面的任何读写指令重排序，也不可与其后的任何读写指令重排序。于是只要加上volatile修饰，问题就解决了：
+
+**正确地姿势！**  
+
+在jdk5之后，JLS进一步定义了内存模型(JSR-133)，其中增强了volatile的语义，规定读写由volatile修饰的指令，不得与其前面的任何读写指令重排序，也不可与其后的任何读写指令重排序。于是只要加上volatile修饰，问题就解决了：
 ```
 class Foo {
     private volatile Helper helper = null;
@@ -138,7 +141,6 @@ helper == null 的判断以及赋值在同一个guard block里，每个线程通
 
 
 **参考资料**  
-[The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html) 对DCL失效的全面阐释  
-[Synchronization and the Java Memory Model](http://gee.cs.oswego.edu/dl/cpj/jmm.html)关于同步、可见性  
-[Memory Ordering at Compile Time](http://preshing.com/20120625/memory-ordering-at-compile-time)
-
+- [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html) 对DCL失效的全面阐释  
+- [Synchronization and the Java Memory Model](http://gee.cs.oswego.edu/dl/cpj/jmm.html)关于同步、可见性  
+- [Memory Ordering at Compile Time](http://preshing.com/20120625/memory-ordering-at-compile-time)
