@@ -11,11 +11,13 @@ com.dyuproject.protostuff.runtime.RuntimeSchema#createFrom
   new com.dyuproject.protostuff.runtime.RuntimeSchema(typeClass,  fields,int lastFieldNumber, instantiator)  
   
 ```  
+----
 ```java 
 com.dyuproject.protostuff.runtime.RuntimeFieldFactory#getFieldFactory(clazz, strategy)
   switch clazz  
     case xx return _RuntimeFieldFactory_CONST_INSTANCE 
 ```
+----
 ```java
 static final RuntimeFieldFactory<Long> INT64;
 static {
@@ -42,6 +44,7 @@ else
                         us.putObject(message, offset, Long.valueOf(input.readInt64()));
                 }
 ```
+----  
 ```java 
  private static final sun.misc.Unsafe us = initUnsafe();
  private static sun.misc.Unsafe initUnsafe() {
